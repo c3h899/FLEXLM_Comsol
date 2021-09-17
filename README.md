@@ -17,3 +17,10 @@ Interpreter is written in Python using the following libraries:
 User must (independently) provide the following binaries:
  + lmtools
  + lmutil
+
+## Usage Notes
+Required license file is directly provided to lmtools
+
+`lic_query = os.popen("lmutil lmstat -a -c " + lic_file).read()`
+
+An example input is included.
