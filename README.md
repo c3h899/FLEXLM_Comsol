@@ -1,2 +1,19 @@
 # FLEXLM_Comsol
-Interpreter for FLEXLM license statues inquiries of COMSOL's license daemon
+Interpreter for FLEXLM license statues inquiries of COMSOL's license daemon.
+
+Application to be ran from terminal, with options for file output.
+
+## Dependencies
+Interpreter is written in Python using the following libraries:
+ + argparse
+ + datetime
+ + json
+ + numpy
+ + os
+ + pandas
+ + pprint
+ + re
+
+User must (independently) provide the following binaries:
+ + lmtools
+ + lmutil
