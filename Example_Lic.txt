@@ -1,0 +1,1 @@
+SERVER {Name or IP} Any {Port}
