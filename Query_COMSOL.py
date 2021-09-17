@@ -24,8 +24,7 @@ def FLEX_user_of(array, line, array_len):
     opt_vendor_str = re.compile(r"^\s*vendor_string:\s*([\w,]+)")
     opt_uncounted = re.compile(r"^\s*uncounted(.*)")
     line03_lic = re.compile(r"^\s*(\w+).*") # TODO: Expand if Needed
-    line04_user = re.compile(r"^    ([\w-]+) ([\w\.-]+) ([\w\.-]+) \(v([0-9\.]+)\) \(.*\), start (.*)")
-    line04_user_2 = re.compile(r"^    ([\w-]+ [\w-]+) ([\w\.-]+) ([\w\.-]+) \(v([0-9\.]+)\) \(.*\), start (.*)")
+    line04_user = re.compile(r"\s*(.*) ([\w\.-]+) ([\w\.-]+) \(v([0-9\.]+)\) \(.*\), start (.*)$")
     # Returned Object
     event = dict()
     # Entry Point
@@ -71,12 +70,10 @@ def FLEX_user_of(array, line, array_len):
         # User List
         while(cont):
             m4 = safe_match(line04_user)
-            if not m4: m4 = safe_match(line04_user_2) # HACK for Windows Users (Names) with 1 space between 2 words
-            # TODO Redefine m4 match to use start at end of string and work towards front keeping final groupings as user
             if m4:
                 line = line + 1
                 details = dict()
-                details["User"] = m4[1]
+                details["User"] = m4[1].strip() # Strip operation should be redundant
                 details["Machine"] = m4[2]
                 date = datetime.datetime.strptime(m4[5], "%a %m/%d %H:%M")
                 event["Date"] = date
