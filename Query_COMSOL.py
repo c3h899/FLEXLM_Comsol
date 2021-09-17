@@ -22,8 +22,10 @@ def FLEX_user_of(array, line, array_len):
     line01b_Total = re.compile(r"^Total of (\d+) licenses? issued;\s*Total of (\d+) licenses? in use")
     line02_Details = re.compile(r"^  \"(\w+)\" v([0-9\.]+), vendor: (\w+), expiry: (.*)")
     opt_vendor_str = re.compile(r"^\s*vendor_string:\s*([\w,]+)")
-    line03_lic = re.compile(r"^  (\w+).*") # TODO: Expand if Needed
+    opt_uncounted = re.compile(r"^\s*uncounted(.*)")
+    line03_lic = re.compile(r"^\s*(\w+).*") # TODO: Expand if Needed
     line04_user = re.compile(r"^    ([\w-]+) ([\w\.-]+) ([\w\.-]+) \(v([0-9\.]+)\) \(.*\), start (.*)")
+    line04_user_2 = re.compile(r"^    ([\w-]+ [\w-]+) ([\w\.-]+) ([\w\.-]+) \(v([0-9\.]+)\) \(.*\), start (.*)")
     # Returned Object
     event = dict()
     # Entry Point
@@ -41,10 +43,10 @@ def FLEX_user_of(array, line, array_len):
             if(m1b):
                 event["Licenses_total"] = int(m1b[1])
                 event["Licenses_used"] = int(m1b[2])
-    # (Optional) Details String
     # TODO: support for looping over multiple license groupings
     def safe_match(pattern):
         return None if (line >= array_len) else re.match(pattern, array[line])
+	# (Optional) Details String
     m2 = safe_match(line02_Details)
     if m2:
         line = line + 1
@@ -55,7 +57,12 @@ def FLEX_user_of(array, line, array_len):
         if m_vendor:
             line = line + 1
             event["Vendor_String"] = m_vendor[1]
-        # License Type
+        # (Optional) uncounted nodelocked ...
+        m_uncounted = safe_match(opt_uncounted)
+        if m_uncounted:
+            line = line + 1
+            # Nothing is DONE with the result
+		# License Type
         m3 = safe_match(line03_lic)
         if m3:
             line = line + 1
@@ -64,6 +71,8 @@ def FLEX_user_of(array, line, array_len):
         # User List
         while(cont):
             m4 = safe_match(line04_user)
+            if not m4: m4 = safe_match(line04_user_2) # HACK for Windows Users (Names) with 1 space between 2 words
+            # TODO Redefine m4 match to use start at end of string and work towards front keeping final groupings as user
             if m4:
                 line = line + 1
                 details = dict()
@@ -132,6 +141,7 @@ def parse_comsol_log(array):
         # Line 9
         m9 = re.match(line09_description, array[ii])
         if m9: ii = ii + 1
+		
         ## Features Loop
         array_len = len(array)
         features = dict()
