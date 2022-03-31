@@ -179,6 +179,7 @@ def argument_parsing():
 						help="License File/s.")
 	parser.add_argument('--complete', action='store_true', help='Displays All Query Results')
 	parser.add_argument('--brief', action='store_true', help='Displays Utilization Summary')
+	parser.add_argument('--raw', action='store_true', help='Displays FLexLM RAW Output')
 	parser.add_argument('--users', action='store_true', help='Displays Utilization with Users')
 	parser.add_argument('--Xall', action='store_true', help='Export Full Query as JSON')
 	parser.add_argument('--Xusers', action='store_true', help='Export Utilization with Users as CSV')
@@ -209,6 +210,8 @@ def argument_parsing():
 		# Resolve License File Name for use a prefix
 		fname_prefix = re.match(fname_pattern, lic)[1]
 		# Query FLEX Server
+		status = get_license_status(lic)
+		if args.raw: print(status)
 		log = strip_empty_lines(get_license_status(lic))
 		# Parse Results
 		parsed = parse_log(log)
